@@ -533,7 +533,7 @@
             <p><strong>出産のサイン：</strong>巣作り行動、食欲の変化、体重増加</p>
             <p><strong>注意：</strong>妊娠後期は静かな環境を保ち、ストレスを避けてください</p>
             <p><strong>備考：</strong>実際の出産日は±1-2日程度の誤差があります</p>
-            <p><strong>💾 データ保存：</strong>記録はブラウザのメモリに保存されます。永続的に保存したい場合はCSV表示をご利用ください</p>
+            <p><strong>💾 データ保存：</strong>記録はブラウザに永続保存されます。ブラウザを閉じても、ページを更新してもデータは残ります</p>
         </div>
     </div>
 
@@ -541,8 +541,38 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // メモリ内でのデータ保存
+        // データ保存キー
+        const STORAGE_KEY = 'hamupiyoRecords';
+        
+        // データを永続保存（localStorage使用）
         let pregnancyRecords = [];
+        
+        // データをlocalStorageから読み込み
+        function loadRecordsFromStorage() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                if (savedData) {
+                    pregnancyRecords = JSON.parse(savedData);
+                    console.log('データを読み込みました:', pregnancyRecords.length + '件');
+                } else {
+                    pregnancyRecords = [];
+                }
+            } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                pregnancyRecords = [];
+            }
+        }
+        
+        // データをlocalStorageに保存
+        function saveRecordsToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(pregnancyRecords));
+                console.log('データを保存しました:', pregnancyRecords.length + '件');
+            } catch (error) {
+                console.error('データ保存エラー:', error);
+                showNotification('データの保存に失敗しました', 'error');
+            }
+        }
         
         // タブ切り替え機能
         function showTab(tabName, clickedButton) {
@@ -681,6 +711,9 @@
             };
             
             pregnancyRecords.push(record);
+            
+            // データを永続保存
+            saveRecordsToStorage();
             
             // 結果を表示
             pregnancyDaysDiv.innerHTML = 
@@ -902,6 +935,7 @@
                     if (importCount > 0) {
                         if (confirm(importCount + '件の記録を読み込みます。既存の記録に追加されます。よろしいですか？')) {
                             pregnancyRecords = pregnancyRecords.concat(newRecords);
+                            saveRecordsToStorage(); // データを保存
                             displayRecords();
                             calculateStatistics();
                             showNotification(importCount + '件の記録を読み込みました！');
@@ -928,6 +962,7 @@
             if (confirm('この記録を削除しますか？')) {
                 pregnancyRecords = pregnancyRecords.filter(record => record.id != recordId);
                 console.log('削除後の記録数:', pregnancyRecords.length);
+                saveRecordsToStorage(); // データを保存
                 displayRecords();
                 calculateStatistics();
                 showNotification('記録を削除しました');
@@ -938,6 +973,7 @@
         function clearAllRecords() {
             if (confirm('すべての記録を削除しますか？この操作は取り消せません。')) {
                 pregnancyRecords = [];
+                saveRecordsToStorage(); // データを保存
                 displayRecords();
                 calculateStatistics();
                 showNotification('すべての記録を削除しました');
@@ -971,6 +1007,9 @@
         
         // エンターキーでの操作とPWA設定
         document.addEventListener('DOMContentLoaded', function() {
+            // 最初にデータを読み込み
+            loadRecordsFromStorage();
+            
             document.getElementById('matingDate').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     calculateDueDate();
