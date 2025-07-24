@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ジャンガリアンハムスター妊娠予定日計算</title>
+    
+    <!-- PWA設定 -->
+    <meta name="theme-color" content="#ff9a9e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ハムスター妊娠計算">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIuOCuOODo+ODs+OCrOODquOCouODs+ODj+ODoCDlprboqKDkuojlrprmppforqHnrpciLAogICJzaG9ydF9uYW1lIjogIuODj+ODoCDlprboqKDorqHnrpciLAogICJkZXNjcmlwdGlvbiI6ICLjgrjjg6Pjg7Pjgqzjg6rjgqLjg7Pjg4/jg6Djgrnjgr/jg7zjga7lprboqKDkuojlrprmppfmm7jjgpLorqHnrpfjgZfjgb7jgZnjgIIiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2ZmOWE5ZSIsCiAgInRoZW1lX2NvbG9yIjogIiNmZjlhOWUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWlCM2FXUjBhRDBpTlRFeUlpQm9aV2xuYUhROUlqVXhNaUlnWm1sc2JEMGlJMlptT1dFNVpTSStQR05wY21Oc1pTQmplRDBpTWpVMklpQmplVDBpTWpVMklpQnlQU0l4T0RBaUlHWnBiR3c5SWlOeVoySW9NalUxTERJMU5Td3lOVFVwSWk4K1BIUmxlSFFnZUQwaU1qVTJJaUI1UFNJME1EQWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUdadmJuUXRjMmw2WlQwaU5EQndjWGdpUGpjMVBDOTBaWGgwUGp3dmMzWm5QZz09IiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfSwKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USmxNalU1TWlCNE5ETWNUUX9JT0VGUlFSWXdKZ2d2UjFKSFMwSjVhSE16ZGpOT1FEWlJjSE50VUE9PSIsCiAgICAgICJzaXplcyI6ICJOVEZNZURVeE1nPT0iLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
+    <!-- アイコン設定 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iI2ZmOWE5ZSI+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxODAiIGZpbGw9IiNyZ2IoMjU1LDI1NSwyNTUpIi8+PHRleHQgeD0iMjU2IiB5PSI0MDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iNDBweCI+8J+QuTwvdGV4dD48L3N2Zz4=">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .hamster-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            line-height: 1.4;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            color: #666;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 2px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(255, 154, 158, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="date"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
+        }
+
+        .button-group {
+            margin-bottom: 30px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin: 0 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 154, 158, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h2 {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .date-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .days-remaining {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .history-header h2 {
+            color: #333;
+            font-size: 1.4rem;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .header-buttons button, .header-buttons label {
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .header-buttons button:hover, .header-buttons label:hover {
+            transform: translateY(-1px);
+        }
+
+        .records-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .record-item {
+            background: #fdf2f8;
+            border: 1px solid #f8bbd9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .record-details {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .pregnancy-days {
+            background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .statistics {
+            background: #fdf2f8;
+            border: 1px solid #f8bbd9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .statistics h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .info {
+            background: #fdf2f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #ff9a9e;
+        }
+
+        .info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .pwa-install-banner {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .pwa-install-banner.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .pwa-install-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .pwa-install-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .csv-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .csv-modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow: auto;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            button {
+                margin: 5px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            
+            .tab-btn {
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+            
+            .history-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hamster-icon">🐹</div>
+        <h1>ジャンガリアンハムスター<br>妊娠予定日計算システム</h1>
+        
+        <!-- PWAインストールバナー -->
+        <div id="pwaInstallBanner" class="pwa-install-banner">
+            <div>📱 ホーム画面に追加して、いつでもアクセス！</div>
+            <button id="pwaInstallBtn" class="pwa-install-btn">ホーム画面に追加</button>
+        </div>
+        
+        <!-- タブ切り替え -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="showTab('prediction', this)">予定日計算</button>
+            <button class="tab-btn" onclick="showTab('record', this)">実績記録</button>
+            <button class="tab-btn" onclick="showTab('history', this)">記録一覧</button>
+        </div>
+        
+        <!-- 予定日計算タブ -->
+        <div id="predictionTab" class="tab-content active">
+            <div class="input-group">
+                <label for="matingDate">お見合い成功日（交配日）</label>
+                <input type="date" id="matingDate" required>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="calculateDueDate()">妊娠予定日を計算</button>
+                <button onclick="clearPrediction()">クリア</button>
+            </div>
+            
+            <div id="result" class="result">
+                <h2>🎉 妊娠予定日</h2>
+                <div id="dueDateRange" class="date-display"></div>
+                <div id="daysRemaining" class="days-remaining"></div>
+            </div>
+        </div>
+        
+        <!-- 実績記録タブ -->
+        <div id="recordTab" class="tab-content">
+            <div class="input-group">
+                <label for="hamsterName">ハムスターの名前</label>
+                <input type="text" id="hamsterName" placeholder="例: ももちゃん" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="recordMatingDate">お見合い成功日</label>
+                <input type="date" id="recordMatingDate" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="birthDate">実際の出産日</label>
+                <input type="date" id="birthDate" required>
+            </div>
+            
+            <div class="button-group">
+                <button onclick="calculateAndRecord()">妊娠期間を計算・記録</button>
+                <button onclick="clearRecord()">クリア</button>
+            </div>
+            
+            <div id="recordResult" class="result">
+                <h2>📊 妊娠期間結果</h2>
+                <div id="pregnancyDays" class="date-display"></div>
+                <div id="recordSuccess" class="days-remaining"></div>
+            </div>
+        </div>
+        
+        <!-- 記録一覧タブ -->
+        <div id="historyTab" class="tab-content">
+            <div class="history-header">
+                <h2>📚 これまでの記録</h2>
+                <div class="header-buttons">
+                    <button onclick="showCSVText()" style="background: #4CAF50;">CSV表示</button>
+                    <label for="csvImport" style="background: #2196F3; color: white;">CSV読込</label>
+                    <input type="file" id="csvImport" accept=".csv" style="display: none;" onchange="importFromCSV(this)">
+                    <button onclick="clearAllRecords()" style="background: #ff6b6b;">全削除</button>
+                </div>
+            </div>
+            <div id="recordsList" class="records-list"></div>
+            <div id="statistics" class="statistics"></div>
+        </div>
+        
+        <div class="info">
+            <h3>📋 参考情報</h3>
+            <p><strong>妊娠期間：</strong>17-19日（18-19日がボリュームゾーン）</p>
+            <p><strong>出産のサイン：</strong>巣作り行動、食欲の変化、体重増加</p>
+            <p><strong>注意：</strong>妊娠後期は静かな環境を保ち、ストレスを避けてください</p>
+            <p><strong>備考：</strong>実際の出産日は±1-2日程度の誤差があります</p>
+            <p><strong>💾 データ保存：</strong>記録はブラウザのメモリに保存されます。永続的に保存したい場合はCSV表示をご利用ください</p>
+            <p><strong>🌐 ネット公開時：</strong>Webサイトとして公開すると、CSV自動ダウンロードとファイル読み込み機能が正常に動作します</p>
+        </div>
+    </div>
+
+    <!-- 通知用のエリア -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // メモリ内でのデータ保存
+        let pregnancyRecords = [];
+        
+        // タブ切り替え機能
+        function showTab(tabName, clickedButton) {
+            // 全てのタブを非表示
+            const allTabs = document.querySelectorAll('.tab-content');
+            const allButtons = document.querySelectorAll('.tab-btn');
+            
+            allTabs.forEach(tab => tab.classList.remove('active'));
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // 選択されたタブを表示
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            clickedButton.classList.add('active');
+            
+            // 記録一覧タブが選択された時は記録を更新
+            if (tabName === 'history') {
+                displayRecords();
+                calculateStatistics();
+            }
+        }
+        
+        // 予定日計算機能
+        function calculateDueDate() {
+            const matingDateInput = document.getElementById('matingDate');
+            const resultDiv = document.getElementById('result');
+            const dueDateRangeDiv = document.getElementById('dueDateRange');
+            const daysRemainingDiv = document.getElementById('daysRemaining');
+            
+            if (!matingDateInput.value) {
+                showNotification('お見合い成功日を入力してください', 'error');
+                return;
+            }
+            
+            const matingDate = new Date(matingDateInput.value);
+            
+            // 成功日を0日目として計算
+            const dueDate17 = new Date(matingDate);
+            dueDate17.setDate(dueDate17.getDate() + 17);
+            
+            const dueDate18 = new Date(matingDate);
+            dueDate18.setDate(dueDate18.getDate() + 18);
+            
+            const dueDate19 = new Date(matingDate);
+            dueDate19.setDate(dueDate19.getDate() + 19);
+            
+            // 日本語での日付表示
+            const options = { 
+                month: 'long', 
+                day: 'numeric',
+                weekday: 'short'
+            };
+            
+            const formatted17 = dueDate17.toLocaleDateString('ja-JP', options);
+            const formatted18 = dueDate18.toLocaleDateString('ja-JP', options);
+            const formatted19 = dueDate19.toLocaleDateString('ja-JP', options);
+            
+            dueDateRangeDiv.innerHTML = 
+                '<div style="font-size: 1.2rem; margin-bottom: 10px;">予想される出産日範囲</div>' +
+                '<div style="font-size: 1.5rem; line-height: 1.4;">' +
+                formatted17 + '<br>' +
+                '⭐ ' + formatted18 + '<br>' +
+                '⭐ ' + formatted19 +
+                '</div>' +
+                '<div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.9;">' +
+                '⭐の日が最も可能性が高い日です' +
+                '</div>';
+            
+            // 18日目からの日数計算
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            dueDate18.setHours(0, 0, 0, 0);
+            
+            const timeDiff = dueDate18.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            let daysText = '';
+            if (daysDiff > 0) {
+                daysText = '最有力予定日まで あと ' + daysDiff + ' 日';
+            } else if (daysDiff === 0) {
+                daysText = '今日が最有力予定日です！';
+            } else if (daysDiff >= -2) {
+                daysText = '出産予定期間中です！';
+            } else {
+                daysText = '予定期間から ' + Math.abs(daysDiff) + ' 日経過';
+            }
+            
+            daysRemainingDiv.textContent = daysText;
+            resultDiv.classList.add('show');
+        }
+        
+        // 実績記録・計算機能
+        function calculateAndRecord() {
+            const nameInput = document.getElementById('hamsterName');
+            const matingDateInput = document.getElementById('recordMatingDate');
+            const birthDateInput = document.getElementById('birthDate');
+            const recordResultDiv = document.getElementById('recordResult');
+            const pregnancyDaysDiv = document.getElementById('pregnancyDays');
+            const recordSuccessDiv = document.getElementById('recordSuccess');
+            
+            if (!nameInput.value || !matingDateInput.value || !birthDateInput.value) {
+                showNotification('すべての項目を入力してください', 'error');
+                return;
+            }
+            
+            const matingDate = new Date(matingDateInput.value);
+            const birthDate = new Date(birthDateInput.value);
+            
+            // 妊娠期間を計算
+            const timeDiff = birthDate.getTime() - matingDate.getTime();
+            const pregnancyDuration = Math.round(timeDiff / (1000 * 3600 * 24));
+            
+            if (pregnancyDuration < 0) {
+                showNotification('出産日は成功日より後の日付を入力してください', 'error');
+                return;
+            }
+            
+            if (pregnancyDuration < 10) {
+                showNotification('妊娠期間が短すぎます。日付を確認してください', 'error');
+                return;
+            }
+            
+            if (pregnancyDuration > 30) {
+                if (!confirm('妊娠期間が' + pregnancyDuration + '日と長めですが、記録しますか？')) {
+                    return;
+                }
+            }
+            
+            // 記録を保存
+            const record = {
+                id: Date.now(),
+                name: nameInput.value,
+                matingDate: matingDateInput.value,
+                birthDate: birthDateInput.value,
+                pregnancyDuration: pregnancyDuration,
+                recordDate: new Date().toLocaleDateString('ja-JP')
+            };
+            
+            pregnancyRecords.push(record);
+            
+            // 結果を表示
+            pregnancyDaysDiv.innerHTML = 
+                '<div style="font-size: 1.2rem;">' + nameInput.value + 'ちゃんの妊娠期間</div>' +
+                '<div style="font-size: 2.2rem; margin: 15px 0;">' + pregnancyDuration + '日間</div>';
+            
+            let comment = '';
+            if (pregnancyDuration >= 17 && pregnancyDuration <= 19) {
+                comment = '✨ 標準的な妊娠期間でした！';
+            } else if (pregnancyDuration < 17) {
+                comment = '⚡ 少し早めの出産でした';
+            } else {
+                comment = '🕰️ 少し長めの妊娠期間でした';
+            }
+            
+            recordSuccessDiv.textContent = '記録しました！ ' + comment;
+            recordResultDiv.classList.add('show');
+            
+            showNotification(nameInput.value + 'ちゃんの記録を保存しました！');
+        }
+        
+        // 記録一覧表示
+        function displayRecords() {
+            const recordsList = document.getElementById('recordsList');
+            
+            if (pregnancyRecords.length === 0) {
+                recordsList.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">まだ記録がありません</p>';
+                return;
+            }
+            
+            const sortedRecords = pregnancyRecords.sort((a, b) => new Date(b.birthDate) - new Date(a.birthDate));
+            
+            let recordsHTML = '';
+            sortedRecords.forEach(record => {
+                recordsHTML += 
+                    '<div class="record-item">' +
+                        '<div class="record-info">' +
+                            '<div class="record-name">' + record.name + 'ちゃん</div>' +
+                            '<div class="record-details">' +
+                                '成功: ' + new Date(record.matingDate).toLocaleDateString('ja-JP') + '<br>' +
+                                '出産: ' + new Date(record.birthDate).toLocaleDateString('ja-JP') +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="pregnancy-days">' + record.pregnancyDuration + '日</div>' +
+                        '<button class="delete-btn" onclick="deleteRecord(' + record.id + ')">削除</button>' +
+                    '</div>';
+            });
+            
+            recordsList.innerHTML = recordsHTML;
+        }
+        
+        // 統計情報計算
+        function calculateStatistics() {
+            const statisticsDiv = document.getElementById('statistics');
+            
+            if (pregnancyRecords.length === 0) {
+                statisticsDiv.style.display = 'none';
+                return;
+            }
+            
+            statisticsDiv.style.display = 'block';
+            
+            const durations = pregnancyRecords.map(r => r.pregnancyDuration);
+            const average = (durations.reduce((a, b) => a + b, 0) / durations.length).toFixed(1);
+            const min = Math.min(...durations);
+            const max = Math.max(...durations);
+            
+            // 期間別の分布
+            const distribution = {};
+            durations.forEach(d => {
+                distribution[d] = (distribution[d] || 0) + 1;
+            });
+            
+            const mostCommon = Object.keys(distribution).reduce((a, b) => 
+                distribution[a] > distribution[b] ? a : b
+            );
+            
+            statisticsDiv.innerHTML = 
+                '<h3>📊 統計情報</h3>' +
+                '<div class="stat-item">' +
+                    '<span>記録数</span>' +
+                    '<span>' + pregnancyRecords.length + '匹</span>' +
+                '</div>' +
+                '<div class="stat-item">' +
+                    '<span>平均妊娠期間</span>' +
+                    '<span>' + average + '日</span>' +
+                '</div>' +
+                '<div class="stat-item">' +
+                    '<span>最短・最長</span>' +
+                    '<span>' + min + '日 - ' + max + '日</span>' +
+                '</div>' +
+                '<div class="stat-item">' +
+                    '<span>最も多い期間</span>' +
+                    '<span>' + mostCommon + '日 (' + distribution[mostCommon] + '匹)</span>' +
+                '</div>';
+        }
+        
+        // CSVテキストを表示（改良版）
+        function showCSVText() {
+            if (pregnancyRecords.length === 0) {
+                showNotification('エクスポートする記録がありません', 'error');
+                return;
+            }
+            
+            // CSVヘッダー
+            const headers = ['名前', 'お見合い成功日', '出産日', '妊娠期間(日)', '記録日'];
+            
+            // CSVデータ作成
+            const csvData = [headers];
+            pregnancyRecords.forEach(record => {
+                csvData.push([
+                    record.name,
+                    record.matingDate,
+                    record.birthDate,
+                    record.pregnancyDuration,
+                    record.recordDate
+                ]);
+            });
+            
+            // CSV文字列に変換
+            const csvContent = csvData.map(row => 
+                row.map(field => '"' + String(field).replace(/"/g, '""') + '"').join(',')
+            ).join('\n');
+            
+            // ファイル名に現在の日時を含める
+            const now = new Date();
+            const timestamp = now.getFullYear() + 
+                String(now.getMonth() + 1).padStart(2, '0') + 
+                String(now.getDate()).padStart(2, '0');
+            const filename = 'ハムスター妊娠記録_' + timestamp + '.csv';
+            
+            // モーダルを作成
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 15px;">📋 CSVデータ</h3>' +
+                '<p style="margin-bottom: 15px; color: #666;">以下のテキストをコピーして、' + filename + 'として保存してください：</p>' +
+                '<textarea id="csvTextarea" readonly style="width: 100%; height: 200px; font-family: monospace; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">' + csvContent + '</textarea>' +
+                '<div style="margin-top: 15px; text-align: center;">' +
+                    '<button onclick="copyCSVText()" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer;">テキストをコピー</button>' +
+                    '<button onclick="closeCSVModal()" style="background: #666; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">閉じる</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // モーダル外クリックで閉じる
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+            
+            showNotification('CSV内容を表示しました');
+        }
+        
+        // CSVテキストをコピー
+        function copyCSVText() {
+            const textarea = document.getElementById('csvTextarea');
+            textarea.select();
+            document.execCommand('copy');
+            showNotification('CSVテキストをコピーしました！');
+        }
+        
+        // CSVモーダルを閉じる
+        function closeCSVModal() {
+            const modal = document.querySelector('.csv-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        // CSVインポート機能
+        function importFromCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csvText = e.target.result;
+                    const lines = csvText.split('\n');
+                    
+                    // ヘッダー行をスキップ
+                    const dataLines = lines.slice(1).filter(line => line.trim());
+                    
+                    let importCount = 0;
+                    const newRecords = [];
+                    
+                    dataLines.forEach(line => {
+                        // CSVパース（簡易版）
+                        const values = line.split(',').map(value => 
+                            value.replace(/^"|"$/g, '').replace(/""/g, '"')
+                        );
+                        
+                        if (values.length >= 5) {
+                            const record = {
+                                id: Date.now() + Math.random(), // 重複を避けるため
+                                name: values[0],
+                                matingDate: values[1],
+                                birthDate: values[2],
+                                pregnancyDuration: parseInt(values[3]),
+                                recordDate: values[4]
+                            };
+                            
+                            // 簡単なバリデーション
+                            if (record.name && record.matingDate && record.birthDate && 
+                                !isNaN(record.pregnancyDuration)) {
+                                newRecords.push(record);
+                                importCount++;
+                            }
+                        }
+                    });
+                    
+                    if (importCount > 0) {
+                        if (confirm(importCount + '件の記録を読み込みます。既存の記録に追加されます。よろしいですか？')) {
+                            pregnancyRecords = pregnancyRecords.concat(newRecords);
+                            displayRecords();
+                            calculateStatistics();
+                            showNotification(importCount + '件の記録を読み込みました！');
+                        }
+                    } else {
+                        showNotification('有効な記録が見つかりませんでした', 'error');
+                    }
+                } catch (error) {
+                    showNotification('CSVファイルの読み込みに失敗しました', 'error');
+                }
+                
+                // ファイル入力をリセット
+                input.value = '';
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+        }
+        
+        // 記録削除（修正版）
+        function deleteRecord(recordId) {
+            console.log('削除対象ID:', recordId);
+            console.log('削除前の記録数:', pregnancyRecords.length);
+            
+            if (confirm('この記録を削除しますか？')) {
+                pregnancyRecords = pregnancyRecords.filter(record => record.id != recordId);
+                console.log('削除後の記録数:', pregnancyRecords.length);
+                displayRecords();
+                calculateStatistics();
+                showNotification('記録を削除しました');
+            }
+        }
+        
+        // 全記録削除
+        function clearAllRecords() {
+            if (confirm('すべての記録を削除しますか？この操作は取り消せません。')) {
+                pregnancyRecords = [];
+                displayRecords();
+                calculateStatistics();
+                showNotification('すべての記録を削除しました');
+            }
+        }
+        
+        // 通知表示機能
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification show' + (type === 'error' ? ' error' : '');
+            
+            // 3秒後に非表示
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 3000);
+        }
+        
+        // クリア機能
+        function clearPrediction() {
+            document.getElementById('matingDate').value = '';
+            document.getElementById('result').classList.remove('show');
+        }
+        
+        function clearRecord() {
+            document.getElementById('hamsterName').value = '';
+            document.getElementById('recordMatingDate').value = '';
+            document.getElementById('birthDate').value = '';
+            document.getElementById('recordResult').classList.remove('show');
+        }
+        
+        // エンターキーでの操作とPWA設定
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('matingDate').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateDueDate();
+                }
+            });
+            
+            document.getElementById('birthDate').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateAndRecord();
+                }
+            });
+            
+            // 今日の日付を最大値として設定
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('matingDate').max = today;
+            document.getElementById('recordMatingDate').max = today;
+            document.getElementById('birthDate').max = today;
+            
+            // 初期化時に記録一覧を表示
+            displayRecords();
+            calculateStatistics();
+            
+            // PWA インストール設定
+            setupPWA();
+        });
+        
+        // PWA設定
+        let deferredPrompt;
+        
+        function setupPWA() {
+            // PWAインストールプロンプトを待機
+            window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('PWA install prompt triggered');
+                e.preventDefault();
+                deferredPrompt = e;
+                showPWAInstallBanner();
+            });
+            
+            // インストールボタンのクリックイベント
+            document.getElementById('pwaInstallBtn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('PWA install outcome:', outcome);
+                    
+                    if (outcome === 'accepted') {
+                        showNotification('ホーム画面に追加されました！🎉');
+                    }
+                    
+                    deferredPrompt = null;
+                    hidePWAInstallBanner();
+                } else {
+                    // iOS Safari等の場合の説明
+                    alert('📱 ホーム画面への追加方法:\n\n' +
+                          '【iPhone/iPad】\n' +
+                          '1. Safariの共有ボタン (□↑) をタップ\n' +
+                          '2. "ホーム画面に追加" を選択\n\n' +
+                          '【Android Chrome】\n' +
+                          '1. メニュー (⋮) をタップ\n' +
+                          '2. "ホーム画面に追加" を選択');
+                }
+            });
+            
+            // すでにインストール済みかチェック
+            if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Already installed as PWA');
+                hidePWAInstallBanner();
+            }
+        }
+        
+        function showPWAInstallBanner() {
+            document.getElementById('pwaInstallBanner').classList.add('show');
+        }
+        
+        function hidePWAInstallBanner() {
+            document.getElementById('pwaInstallBanner').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
+            
