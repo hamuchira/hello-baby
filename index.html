@@ -1001,6 +1001,9 @@
         let deferredPrompt;
         
         function setupPWA() {
+            // バナーを常に表示（テスト用）
+            showPWAInstallBanner();
+            
             // PWAインストールプロンプトを待機
             window.addEventListener('beforeinstallprompt', (e) => {
                 console.log('PWA install prompt triggered');
