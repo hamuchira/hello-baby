@@ -462,6 +462,7 @@
             <button class="tab-btn active" onclick="showTab('prediction', this)">予定日計算</button>
             <button class="tab-btn" onclick="showTab('record', this)">実績記録</button>
             <button class="tab-btn" onclick="showTab('history', this)">記録一覧</button>
+            <button class="tab-btn" onclick="showTab('heat', this)">🌸発情期</button>
         </div>
         
         <!-- 予定日計算タブ -->
@@ -525,6 +526,41 @@
             </div>
             <div id="recordsList" class="records-list"></div>
             <div id="statistics" class="statistics"></div>
+        </div>
+        
+        <!-- 発情期管理タブ -->
+        <div id="heatTab" class="tab-content">
+            <!-- 今日の発情期通知エリア -->
+            <div id="todayHeatNotification" style="margin-bottom: 25px;"></div>
+            
+            <!-- ハムスター選択プルダウン -->
+            <div id="hamsterSelector" style="display: none; margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: 600;">🐹 表示するハムスター</label>
+                <select id="selectedHamster" onchange="displaySelectedHamster()" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
+                    <option value="">すべて表示</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="heatHamsterName">🐹 ハムスターの名前</label>
+                <input type="text" id="heatHamsterName" placeholder="例: ももちゃん、さくらちゃん" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="lastHeatDate">🌸 最後の発情日</label>
+                <input type="date" id="lastHeatDate" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="lastHeatTime">⏰ 発情時刻（任意）</label>
+                <input type="time" id="lastHeatTime" style="width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
+            </div>
+            
+            <div class="button-group">
+                <button onclick="addHeatCycleHamster()">➕ ハムスターを追加</button>
+            </div>
+            
+            <div id="heatCycleList" class="records-list" style="margin-top: 30px;"></div>
         </div>
         
         <div class="info">
@@ -591,6 +627,11 @@
             if (tabName === 'history') {
                 displayRecords();
                 calculateStatistics();
+            }
+            
+            // 発情期タブが選択された時は発情期一覧を更新
+            if (tabName === 'heat') {
+                displayHeatCycles();
             }
         }
         
@@ -1009,6 +1050,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 最初にデータを読み込み
             loadRecordsFromStorage();
+            loadHeatCyclesFromStorage(); // 発情期データも読み込み
             
             document.getElementById('matingDate').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -1027,10 +1069,13 @@
             document.getElementById('matingDate').max = today;
             document.getElementById('recordMatingDate').max = today;
             document.getElementById('birthDate').max = today;
+            document.getElementById('lastHeatDate').max = today; // 発情期入力も追加
             
             // 初期化時に記録一覧を表示
             displayRecords();
             calculateStatistics();
+            displayHeatCycles(); // 発情期一覧も表示
+            updateHamsterSelector(); // ハムスター選択プルダウンを更新
             
             // PWA インストール設定
             setupPWA();
@@ -1138,6 +1183,359 @@
         
         function hidePWAInstallBanner() {
             document.getElementById('pwaInstallBanner').classList.remove('show');
+        }
+        
+        // ========== 発情期管理機能 ==========
+        const HEAT_STORAGE_KEY = 'hamupiyoHeatCycles';
+        let heatCycleHamsters = [];
+        
+        // 発情期データをlocalStorageから読み込み
+        function loadHeatCyclesFromStorage() {
+            try {
+                const savedData = localStorage.getItem(HEAT_STORAGE_KEY);
+                if (savedData) {
+                    heatCycleHamsters = JSON.parse(savedData);
+                    console.log('発情期データを読み込みました:', heatCycleHamsters.length + '匹');
+                } else {
+                    heatCycleHamsters = [];
+                }
+            } catch (error) {
+                console.error('発情期データ読み込みエラー:', error);
+                heatCycleHamsters = [];
+            }
+        }
+        
+        // 発情期データをlocalStorageに保存
+        function saveHeatCyclesToStorage() {
+            try {
+                localStorage.setItem(HEAT_STORAGE_KEY, JSON.stringify(heatCycleHamsters));
+                console.log('発情期データを保存しました:', heatCycleHamsters.length + '匹');
+            } catch (error) {
+                console.error('発情期データ保存エラー:', error);
+                showNotification('データの保存に失敗しました', 'error');
+            }
+        }
+        
+        // ハムスターを追加
+        function addHeatCycleHamster() {
+            const nameInput = document.getElementById('heatHamsterName');
+            const dateInput = document.getElementById('lastHeatDate');
+            const timeInput = document.getElementById('lastHeatTime');
+            
+            if (!nameInput.value) {
+                showNotification('ハムスターの名前を入力してください', 'error');
+                return;
+            }
+            
+            if (!dateInput.value) {
+                showNotification('最後の発情日を入力してください', 'error');
+                return;
+            }
+            
+            const newHamster = {
+                id: Date.now(),
+                name: nameInput.value,
+                lastHeatDate: dateInput.value,
+                lastHeatTime: timeInput.value || null
+            };
+            
+            heatCycleHamsters.push(newHamster);
+            saveHeatCyclesToStorage();
+            updateHamsterSelector();
+            displayHeatCycles();
+            
+            // 入力欄をクリア
+            nameInput.value = '';
+            dateInput.value = '';
+            timeInput.value = '';
+            
+            showNotification('🌸 ' + newHamster.name + 'ちゃんを追加しました！');
+        }
+        
+        // 発情期計算（4日周期で12回分）
+        function calculateHeatDates(lastHeatDateStr) {
+            const dates = [];
+            const startDate = new Date(lastHeatDateStr);
+            
+            for (let i = 1; i <= 12; i++) {
+                const heatDate = new Date(startDate);
+                heatDate.setDate(startDate.getDate() + (i * 4));
+                dates.push(heatDate);
+            }
+            
+            return dates;
+        }
+        
+        // 発情期一覧を表示
+        function displayHeatCycles() {
+            const listDiv = document.getElementById('heatCycleList');
+            const notificationDiv = document.getElementById('todayHeatNotification');
+            
+            // 今日の発情期通知をチェック
+            checkTodayHeat(notificationDiv);
+            
+            if (heatCycleHamsters.length === 0) {
+                listDiv.innerHTML = '<div style="text-align: center; color: #999; padding: 40px; background: #f8f9fa; border-radius: 10px;"><p style="font-size: 3em; margin: 20px 0;">🐹</p><p>まだハムスターが登録されていません</p></div>';
+                return;
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const selectedId = document.getElementById('selectedHamster').value;
+            const hamstersToDisplay = selectedId ? 
+                heatCycleHamsters.filter(h => h.id == selectedId) : 
+                heatCycleHamsters;
+            
+            let html = '';
+            
+            hamstersToDisplay.forEach(hamster => {
+                const heatDates = calculateHeatDates(hamster.lastHeatDate);
+                const upcomingDates = heatDates.filter(date => date >= today).slice(0, 6);
+                
+                html += '<div class="record-card">';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">';
+                html += '<h3 style="color: #ff9a9e; margin: 0;">🐹 ' + hamster.name + '</h3>';
+                html += '<button class="delete-btn" onclick="deleteHeatCycleHamster(' + hamster.id + ')">🗑️ 削除</button>';
+                html += '</div>';
+                
+                const lastDate = new Date(hamster.lastHeatDate);
+                let timeInfo = '';
+                if (hamster.lastHeatTime) {
+                    timeInfo = ' ' + hamster.lastHeatTime;
+                }
+                html += '<p style="color: #666; margin-bottom: 15px;">最後の発情: ' + 
+                        (lastDate.getMonth() + 1) + '月' + lastDate.getDate() + '日' + timeInfo + '</p>';
+                
+                html += '<div style="margin-bottom: 20px;">';
+                html += '<strong style="color: #ff9a9e;">🌸 今後の発情期（4日周期）:</strong><br>';
+                
+                upcomingDates.forEach(date => {
+                    const dateStr = (date.getMonth() + 1) + '月' + date.getDate() + '日';
+                    html += '<span style="display: inline-block; background: linear-gradient(135deg, #ffe0e8 0%, #ffd0e0 100%); color: #ff6b9d; padding: 8px 15px; border-radius: 20px; margin: 5px; font-weight: 600; box-shadow: 0 2px 5px rgba(255,107,157,0.2);">' + dateStr + '</span>';
+                });
+                
+                html += '</div>';
+                
+                // カレンダー表示
+                html += generateHeatCalendar(heatDates, hamster);
+                
+                html += '</div>';
+            });
+            
+            listDiv.innerHTML = html;
+        }
+        
+        // 今日の発情期をチェック
+        function checkTodayHeat(notificationDiv) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const todayHeatHamsters = [];
+            
+            heatCycleHamsters.forEach(hamster => {
+                const heatDates = calculateHeatDates(hamster.lastHeatDate);
+                const hasTodayHeat = heatDates.some(heatDate => {
+                    const hd = new Date(heatDate);
+                    hd.setHours(0, 0, 0, 0);
+                    return hd.getTime() === today.getTime();
+                });
+                
+                if (hasTodayHeat) {
+                    todayHeatHamsters.push(hamster);
+                }
+            });
+            
+            if (todayHeatHamsters.length > 0) {
+                let html = '<div style="background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); animation: pulse 2s infinite;">';
+                html += '<h3 style="margin-bottom: 10px; font-size: 1.3em;">🌸 今日は発情期です！ 🌸</h3>';
+                
+                todayHeatHamsters.forEach(hamster => {
+                    let timeInfo = '';
+                    if (hamster.lastHeatTime) {
+                        // 4日周期で時刻を計算
+                        const daysSinceLastHeat = Math.floor((today - new Date(hamster.lastHeatDate)) / (1000 * 60 * 60 * 24));
+                        const cycles = Math.floor(daysSinceLastHeat / 4);
+                        if (daysSinceLastHeat % 4 === 0) {
+                            timeInfo = ' (予想時刻: ' + hamster.lastHeatTime + ' 頃)';
+                        }
+                    }
+                    html += '<p style="font-size: 1.2em; margin: 5px 0;">🐹 ' + hamster.name + 'ちゃん' + timeInfo + '</p>';
+                });
+                
+                html += '</div>';
+                
+                // アニメーション追加
+                const style = document.createElement('style');
+                style.textContent = '@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }';
+                if (!document.querySelector('style[data-pulse]')) {
+                    style.setAttribute('data-pulse', 'true');
+                    document.head.appendChild(style);
+                }
+                
+                notificationDiv.innerHTML = html;
+            } else {
+                notificationDiv.innerHTML = '';
+            }
+        }
+        
+        // カレンダー生成
+        function generateHeatCalendar(heatDates, hamster) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let calendarHtml = '';
+            
+            // 3ヶ月分のカレンダーを表示
+            for (let monthOffset = 0; monthOffset < 3; monthOffset++) {
+                const month = new Date(today.getFullYear(), today.getMonth() + monthOffset, 1);
+                const year = month.getFullYear();
+                const monthNum = month.getMonth();
+                const firstDay = month.getDay();
+                const daysInMonth = new Date(year, monthNum + 1, 0).getDate();
+                
+                calendarHtml += '<div style="margin-top: 20px;">';
+                calendarHtml += '<div style="text-align: center; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; color: #555;">';
+                calendarHtml += year + '年 ' + (monthNum + 1) + '月</div>';
+                
+                // カレンダーグリッド
+                calendarHtml += '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;">';
+                
+                // 曜日ヘッダー
+                const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
+                weekDays.forEach(day => {
+                    calendarHtml += '<div style="text-align: center; font-weight: bold; padding: 8px; background: #f8f9fa; border-radius: 5px; font-size: 0.85em;">' + day + '</div>';
+                });
+                
+                // 空白セル
+                for (let i = 0; i < firstDay; i++) {
+                    calendarHtml += '<div></div>';
+                }
+                
+                // 日付セル
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const currentDate = new Date(year, monthNum, day);
+                    currentDate.setHours(0, 0, 0, 0);
+                    
+                    const isToday = currentDate.getTime() === today.getTime();
+                    const isHeatDay = heatDates.some(heatDate => {
+                        const hd = new Date(heatDate);
+                        hd.setHours(0, 0, 0, 0);
+                        return hd.getTime() === currentDate.getTime();
+                    });
+                    
+                    let cellStyle = 'padding: 10px; text-align: center; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 0.85em; position: relative;';
+                    let clickEvent = '';
+                    
+                    if (isHeatDay) {
+                        cellStyle += ' background: linear-gradient(135deg, #ffe0e8 0%, #ffd0e0 100%); border-color: #ff9a9e; color: #ff6b9d; font-weight: bold; cursor: pointer;';
+                        if (hamster && hamster.lastHeatTime) {
+                            clickEvent = ' onclick="showHeatTime(\'' + hamster.name + '\', \'' + (monthNum + 1) + '月' + day + '日\', \'' + hamster.lastHeatTime + '\')"';
+                        }
+                    } else {
+                        cellStyle += ' background: white;';
+                    }
+                    
+                    if (isToday) {
+                        cellStyle += ' border: 2px solid #4ecdc4; box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);';
+                    }
+                    
+                    calendarHtml += '<div style="' + cellStyle + '"' + clickEvent + '>';
+                    calendarHtml += day;
+                    if (isHeatDay) {
+                        calendarHtml += '<div style="position: absolute; top: 2px; right: 2px; font-size: 0.7em;">🌸</div>';
+                    }
+                    calendarHtml += '</div>';
+                }
+                
+                calendarHtml += '</div></div>';
+            }
+            
+            return calendarHtml;
+        }
+        
+        // 発情時刻を表示
+        function showHeatTime(name, date, time) {
+            showNotification('🐹 ' + name + 'ちゃん\n' + date + ' ' + time + ' 頃', 'success');
+        }
+        
+        // ハムスター削除（確認ダイアログ付き）
+        function deleteHeatCycleHamster(id) {
+            const hamster = heatCycleHamsters.find(h => h.id === id);
+            if (!hamster) return;
+            
+            // カスタム確認ダイアログ
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            modalContent.style.textAlign = 'center';
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 20px; color: #ff6b9d;">🐹 ' + hamster.name + 'ちゃんのデータを削除しますか？</h3>' +
+                '<p style="margin-bottom: 30px; color: #666;">この操作は取り消せません</p>' +
+                '<div style="display: flex; gap: 10px; justify-content: center;">' +
+                    '<button onclick="confirmDeleteHamster(' + id + ')" style="background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 150px;">はい</button>' +
+                    '<button onclick="closeDeleteModal()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 150px;">いいえ</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // モーダル外クリックで閉じる
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        // 削除確定
+        function confirmDeleteHamster(id) {
+            heatCycleHamsters = heatCycleHamsters.filter(h => h.id !== id);
+            saveHeatCyclesToStorage();
+            updateHamsterSelector();
+            displayHeatCycles();
+            closeDeleteModal();
+            showNotification('ハムスターを削除しました');
+        }
+        
+        // 削除モーダルを閉じる
+        function closeDeleteModal() {
+            const modal = document.querySelector('.csv-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        // ハムスター選択プルダウンを更新
+        function updateHamsterSelector() {
+            const selector = document.getElementById('selectedHamster');
+            const selectorDiv = document.getElementById('hamsterSelector');
+            
+            if (heatCycleHamsters.length === 0) {
+                selectorDiv.style.display = 'none';
+                return;
+            }
+            
+            // 2匹以上いる場合のみ表示
+            if (heatCycleHamsters.length >= 2) {
+                selectorDiv.style.display = 'block';
+                
+                // プルダウンを更新
+                let options = '<option value="">すべて表示</option>';
+                heatCycleHamsters.forEach(hamster => {
+                    options += '<option value="' + hamster.id + '">' + hamster.name + '</option>';
+                });
+                selector.innerHTML = options;
+            } else {
+                selectorDiv.style.display = 'none';
+            }
+        }
+        
+        // 選択されたハムスターを表示
+        function displaySelectedHamster() {
+            displayHeatCycles();
         }
     </script>
 </body>
