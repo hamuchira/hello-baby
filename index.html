@@ -533,34 +533,18 @@
             <!-- 今日の発情期通知エリア -->
             <div id="todayHeatNotification" style="margin-bottom: 25px;"></div>
             
-            <!-- ハムスター選択プルダウン -->
-            <div id="hamsterSelector" style="display: none; margin-bottom: 25px;">
-                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: 600;">🐹 表示するハムスター</label>
-                <select id="selectedHamster" onchange="displaySelectedHamster()" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
-                    <option value="">すべて表示</option>
-                </select>
+            <!-- ハムスター選択と追加ボタン -->
+            <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 25px;">
+                <div id="hamsterSelectorWrapper" style="flex: 1;">
+                    <label style="display: block; margin-bottom: 8px; color: #555; font-weight: 600;">🐹 表示するハムスター</label>
+                    <select id="selectedHamster" onchange="displaySelectedHamster()" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
+                        <option value="">すべて表示</option>
+                    </select>
+                </div>
+                <button onclick="openAddHamsterModal()" style="padding: 12px 24px; white-space: nowrap;">➕ 追加</button>
             </div>
             
-            <div class="input-group">
-                <label for="heatHamsterName">🐹 ハムスターの名前</label>
-                <input type="text" id="heatHamsterName" placeholder="例: ももちゃん、さくらちゃん" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="lastHeatDate">🌸 最後の発情日</label>
-                <input type="date" id="lastHeatDate" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="lastHeatTime">⏰ 発情時刻（任意）</label>
-                <input type="time" id="lastHeatTime" style="width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
-            </div>
-            
-            <div class="button-group">
-                <button onclick="addHeatCycleHamster()">➕ ハムスターを追加</button>
-            </div>
-            
-            <div id="heatCycleList" class="records-list" style="margin-top: 30px;"></div>
+            <div id="heatCycleList" class="records-list"></div>
         </div>
         
         <div class="info">
@@ -1216,42 +1200,6 @@
             }
         }
         
-        // ハムスターを追加
-        function addHeatCycleHamster() {
-            const nameInput = document.getElementById('heatHamsterName');
-            const dateInput = document.getElementById('lastHeatDate');
-            const timeInput = document.getElementById('lastHeatTime');
-            
-            if (!nameInput.value) {
-                showNotification('ハムスターの名前を入力してください', 'error');
-                return;
-            }
-            
-            if (!dateInput.value) {
-                showNotification('最後の発情日を入力してください', 'error');
-                return;
-            }
-            
-            const newHamster = {
-                id: Date.now(),
-                name: nameInput.value,
-                lastHeatDate: dateInput.value,
-                lastHeatTime: timeInput.value || null
-            };
-            
-            heatCycleHamsters.push(newHamster);
-            saveHeatCyclesToStorage();
-            updateHamsterSelector();
-            displayHeatCycles();
-            
-            // 入力欄をクリア
-            nameInput.value = '';
-            dateInput.value = '';
-            timeInput.value = '';
-            
-            showNotification('🌸 ' + newHamster.name + 'ちゃんを追加しました！');
-        }
-        
         // 発情期計算（4日周期で12回分）
         function calculateHeatDates(lastHeatDateStr) {
             const dates = [];
@@ -1511,31 +1459,117 @@
         // ハムスター選択プルダウンを更新
         function updateHamsterSelector() {
             const selector = document.getElementById('selectedHamster');
-            const selectorDiv = document.getElementById('hamsterSelector');
             
-            if (heatCycleHamsters.length === 0) {
-                selectorDiv.style.display = 'none';
-                return;
-            }
-            
-            // 2匹以上いる場合のみ表示
-            if (heatCycleHamsters.length >= 2) {
-                selectorDiv.style.display = 'block';
-                
-                // プルダウンを更新
-                let options = '<option value="">すべて表示</option>';
-                heatCycleHamsters.forEach(hamster => {
-                    options += '<option value="' + hamster.id + '">' + hamster.name + '</option>';
-                });
-                selector.innerHTML = options;
-            } else {
-                selectorDiv.style.display = 'none';
-            }
+            // プルダウンを更新
+            let options = '<option value="">すべて表示</option>';
+            heatCycleHamsters.forEach(hamster => {
+                options += '<option value="' + hamster.id + '">' + hamster.name + '</option>';
+            });
+            selector.innerHTML = options;
         }
         
         // 選択されたハムスターを表示
         function displaySelectedHamster() {
             displayHeatCycles();
+        }
+        
+        // ハムスター追加モーダルを開く
+        function openAddHamsterModal() {
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            modal.id = 'addHamsterModal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 20px; color: #ff9a9e; text-align: center;">🐹 新しいハムスターを追加</h3>' +
+                '<div style="text-align: left;">' +
+                    '<div class="input-group">' +
+                        '<label for="modalHeatHamsterName">🐹 ハムスターの名前</label>' +
+                        '<input type="text" id="modalHeatHamsterName" placeholder="例: ももちゃん、さくらちゃん" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">' +
+                    '</div>' +
+                    '<div class="input-group">' +
+                        '<label for="modalLastHeatDate">🌸 最後の発情日</label>' +
+                        '<input type="date" id="modalLastHeatDate" max="' + today + '" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">' +
+                    '</div>' +
+                    '<div class="input-group">' +
+                        '<label for="modalLastHeatTime">⏰ 発情時刻（任意）</label>' +
+                        '<input type="time" id="modalLastHeatTime" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">' +
+                    '<button onclick="addHamsterFromModal()" style="background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 200px;">登録</button>' +
+                    '<button onclick="closeAddHamsterModal()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 200px;">キャンセル</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // モーダル外クリックで閉じる
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAddHamsterModal();
+                }
+            });
+            
+            // Enterキーで登録
+            document.getElementById('modalHeatHamsterName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addHamsterFromModal();
+            });
+            document.getElementById('modalLastHeatDate').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addHamsterFromModal();
+            });
+            document.getElementById('modalLastHeatTime').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') addHamsterFromModal();
+            });
+            
+            // 最初の入力欄にフォーカス
+            setTimeout(() => {
+                document.getElementById('modalHeatHamsterName').focus();
+            }, 100);
+        }
+        
+        // モーダルからハムスターを追加
+        function addHamsterFromModal() {
+            const nameInput = document.getElementById('modalHeatHamsterName');
+            const dateInput = document.getElementById('modalLastHeatDate');
+            const timeInput = document.getElementById('modalLastHeatTime');
+            
+            if (!nameInput.value) {
+                showNotification('ハムスターの名前を入力してください', 'error');
+                return;
+            }
+            
+            if (!dateInput.value) {
+                showNotification('最後の発情日を入力してください', 'error');
+                return;
+            }
+            
+            const newHamster = {
+                id: Date.now(),
+                name: nameInput.value,
+                lastHeatDate: dateInput.value,
+                lastHeatTime: timeInput.value || null
+            };
+            
+            heatCycleHamsters.push(newHamster);
+            saveHeatCyclesToStorage();
+            updateHamsterSelector();
+            displayHeatCycles();
+            closeAddHamsterModal();
+            
+            showNotification('🌸 ' + newHamster.name + 'ちゃんを追加しました！');
+        }
+        
+        // ハムスター追加モーダルを閉じる
+        function closeAddHamsterModal() {
+            const modal = document.getElementById('addHamsterModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
         }
     </script>
 </body>
