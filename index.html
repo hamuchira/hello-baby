@@ -39,6 +39,18 @@
             max-width: 500px;
             width: 100%;
             text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* スクロールバーを非表示にする（機能は残す） */
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .container {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
 
         .hamster-icon {
@@ -240,8 +252,6 @@
         }
 
         .records-list {
-            max-height: 300px;
-            overflow-y: auto;
             margin-bottom: 20px;
         }
 
@@ -463,6 +473,7 @@
             <button class="tab-btn" onclick="showTab('record', this)">実績記録</button>
             <button class="tab-btn" onclick="showTab('history', this)">記録一覧</button>
             <button class="tab-btn" onclick="showTab('heat', this)">🌸発情期</button>
+            <button class="tab-btn" onclick="showTab('pregnancy', this)">🤰妊娠観察</button>
         </div>
         
         <!-- 予定日計算タブ -->
@@ -547,13 +558,20 @@
             <div id="heatCycleList" class="records-list"></div>
         </div>
         
-        <div class="info">
-            <h3>📋 参考情報</h3>
-            <p><strong>妊娠期間：</strong>17-19日（18-19日がボリュームゾーン）</p>
-            <p><strong>出産のサイン：</strong>巣作り行動、食欲の変化、体重増加</p>
-            <p><strong>注意：</strong>妊娠後期は静かな環境を保ち、ストレスを避けてください</p>
-            <p><strong>備考：</strong>実際の出産日は±1-2日程度の誤差があります</p>
-            <p><strong>💾 データ保存：</strong>記録はブラウザに永続保存されます。ブラウザを閉じても、ページを更新してもデータは残ります</p>
+        <!-- 妊娠観察タブ -->
+        <div id="pregnancyTab" class="tab-content">
+            <!-- ハムスター選択と追加ボタン -->
+            <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 25px;">
+                <div style="flex: 1;">
+                    <label style="display: block; margin-bottom: 8px; color: #555; font-weight: 600;">🤰 妊娠観察中のハムスター</label>
+                    <select id="selectedPregnantHamster" onchange="displaySelectedPregnancy()" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">
+                        <option value="">すべて表示</option>
+                    </select>
+                </div>
+                <button onclick="openAddPregnancyModal()" style="padding: 12px 24px; white-space: nowrap;">➕ 新規追加</button>
+            </div>
+            
+            <div id="pregnancyObservationList" class="records-list"></div>
         </div>
     </div>
 
@@ -616,6 +634,11 @@
             // 発情期タブが選択された時は発情期一覧を更新
             if (tabName === 'heat') {
                 displayHeatCycles();
+            }
+            
+            // 妊娠観察タブが選択された時は妊娠観察一覧を更新
+            if (tabName === 'pregnancy') {
+                displayPregnancies();
             }
         }
         
@@ -1035,6 +1058,7 @@
             // 最初にデータを読み込み
             loadRecordsFromStorage();
             loadHeatCyclesFromStorage(); // 発情期データも読み込み
+            loadPregnanciesFromStorage(); // 妊娠観察データも読み込み
             
             document.getElementById('matingDate').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -1059,6 +1083,8 @@
             calculateStatistics();
             displayHeatCycles(); // 発情期一覧も表示
             updateHamsterSelector(); // ハムスター選択プルダウンを更新
+            displayPregnancies(); // 妊娠観察一覧も表示
+            updatePregnancySelector(); // 妊娠観察プルダウンを更新
             
             // PWA インストール設定
             setupPWA();
@@ -1343,7 +1369,7 @@
                 const firstDay = month.getDay();
                 const daysInMonth = new Date(year, monthNum + 1, 0).getDate();
                 
-                calendarHtml += '<div style="margin-top: 20px;">';
+                calendarHtml += '<div style="margin-top: 30px; margin-bottom: 10px;">';
                 calendarHtml += '<div style="text-align: center; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; color: #555;">';
                 calendarHtml += year + '年 ' + (monthNum + 1) + '月</div>';
                 
@@ -1479,6 +1505,502 @@
         // 選択されたハムスターを表示
         function displaySelectedHamster() {
             displayHeatCycles();
+        }
+        
+        // ========== 妊娠観察機能 ==========
+        const PREGNANCY_STORAGE_KEY = 'hamupiyoPregnancies';
+        let pregnantHamsters = [];
+        
+        // 妊娠観察データをlocalStorageから読み込み
+        function loadPregnanciesFromStorage() {
+            try {
+                const savedData = localStorage.getItem(PREGNANCY_STORAGE_KEY);
+                if (savedData) {
+                    pregnantHamsters = JSON.parse(savedData);
+                    console.log('妊娠観察データを読み込みました:', pregnantHamsters.length + '匹');
+                } else {
+                    pregnantHamsters = [];
+                }
+            } catch (error) {
+                console.error('妊娠観察データ読み込みエラー:', error);
+                pregnantHamsters = [];
+            }
+        }
+        
+        // 妊娠観察データをlocalStorageに保存
+        function savePregnanciesStorage() {
+            try {
+                localStorage.setItem(PREGNANCY_STORAGE_KEY, JSON.stringify(pregnantHamsters));
+                console.log('妊娠観察データを保存しました:', pregnantHamsters.length + '匹');
+            } catch (error) {
+                console.error('妊娠観察データ保存エラー:', error);
+                showNotification('データの保存に失敗しました', 'error');
+            }
+        }
+        
+        // 妊娠観察モーダルを開く
+        function openAddPregnancyModal() {
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            modal.id = 'addPregnancyModal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            
+            // 発情期タブから登録済みハムスターを取得
+            let hamsterOptions = '<option value="">-- 選択してください --</option>';
+            heatCycleHamsters.forEach(hamster => {
+                hamsterOptions += '<option value="' + hamster.id + '">' + hamster.name + '</option>';
+            });
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 20px; color: #ff9a9e; text-align: center;">🤰 妊娠観察を開始</h3>' +
+                '<div style="text-align: left;">' +
+                    '<div class="input-group">' +
+                        '<label for="modalPregnancyHamster">🐹 ハムスターを選択</label>' +
+                        '<select id="modalPregnancyHamster" onchange="fillLastHeatDate()" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">' +
+                            hamsterOptions +
+                        '</select>' +
+                    '</div>' +
+                    '<div class="input-group">' +
+                        '<label for="modalPregnancyDate">🌸 最後の発情日</label>' +
+                        '<input type="date" id="modalPregnancyDate" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">' +
+                    '<button onclick="addPregnancyFromModal()" style="background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 200px;">観察開始</button>' +
+                    '<button onclick="closeAddPregnancyModal()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 200px;">キャンセル</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // モーダル外クリックで閉じる
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeAddPregnancyModal();
+                }
+            });
+        }
+        
+        // 発情期タブから最後の発情日を自動入力
+        function fillLastHeatDate() {
+            const select = document.getElementById('modalPregnancyHamster');
+            const dateInput = document.getElementById('modalPregnancyDate');
+            
+            if (select.value) {
+                const hamster = heatCycleHamsters.find(h => h.id == select.value);
+                if (hamster) {
+                    dateInput.value = hamster.lastHeatDate;
+                }
+            }
+        }
+        
+        // モーダルから妊娠観察を追加
+        function addPregnancyFromModal() {
+            const hamsterSelect = document.getElementById('modalPregnancyHamster');
+            const dateInput = document.getElementById('modalPregnancyDate');
+            
+            if (!hamsterSelect.value) {
+                showNotification('ハムスターを選択してください', 'error');
+                return;
+            }
+            
+            if (!dateInput.value) {
+                showNotification('最後の発情日を入力してください', 'error');
+                return;
+            }
+            
+            const selectedHamster = heatCycleHamsters.find(h => h.id == hamsterSelect.value);
+            
+            const newPregnancy = {
+                id: Date.now(),
+                hamsterId: selectedHamster.id,
+                name: selectedHamster.name,
+                lastHeatDate: dateInput.value,
+                archived: false
+            };
+            
+            pregnantHamsters.push(newPregnancy);
+            savePregnanciesStorage();
+            updatePregnancySelector();
+            displayPregnancies();
+            closeAddPregnancyModal();
+            
+            showNotification('🤰 ' + newPregnancy.name + 'ちゃんの観察を開始しました！');
+        }
+        
+        // 妊娠観察モーダルを閉じる
+        function closeAddPregnancyModal() {
+            const modal = document.getElementById('addPregnancyModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        // 妊娠観察一覧を表示
+        function displayPregnancies() {
+            const listDiv = document.getElementById('pregnancyObservationList');
+            
+            // プルダウンを更新
+            updatePregnancySelector();
+            
+            const activePregnancies = pregnantHamsters.filter(p => !p.archived);
+            
+            if (activePregnancies.length === 0) {
+                listDiv.innerHTML = '<div style="text-align: center; color: #999; padding: 40px; background: #f8f9fa; border-radius: 10px;"><p style="font-size: 3em; margin: 20px 0;">🐹</p><p>まだ妊娠観察中のハムスターがいません</p></div>';
+                return;
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const selectedId = document.getElementById('selectedPregnantHamster').value;
+            const pregnanciesToDisplay = selectedId ? 
+                activePregnancies.filter(p => p.id == selectedId) : 
+                activePregnancies;
+            
+            let html = '';
+            
+            pregnanciesToDisplay.forEach(pregnancy => {
+                const heatDate = new Date(pregnancy.lastHeatDate);
+                heatDate.setHours(0, 0, 0, 0);
+                const daysPregnant = Math.floor((today - heatDate) / (1000 * 60 * 60 * 24));
+                
+                // 出産予定日
+                const dueDate17 = new Date(heatDate);
+                dueDate17.setDate(dueDate17.getDate() + 17);
+                const dueDate18 = new Date(heatDate);
+                dueDate18.setDate(dueDate18.getDate() + 18);
+                const dueDate19 = new Date(heatDate);
+                dueDate19.setDate(dueDate19.getDate() + 19);
+                
+                // 日数ごとのコメント
+                let comment = '';
+                if (daysPregnant < 0) {
+                    comment = 'まだ発情日前です';
+                } else if (daysPregnant === 0) {
+                    comment = '今日が発情日です！';
+                } else if (daysPregnant >= 1 && daysPregnant <= 9) {
+                    comment = '通常通りお世話をしてあげましょう';
+                } else if (daysPregnant === 10) {
+                    comment = 'これから体重が増えていきます！<br>毎日体重を測って記録しましょう';
+                } else if (daysPregnant >= 11 && daysPregnant <= 16) {
+                    comment = '体重増加期です<br>栄養バランスの良い食事を心がけましょう';
+                } else if (daysPregnant >= 17 && daysPregnant <= 19) {
+                    comment = '出産間近！巣作りを始めるかも<br>静かな環境を保ち、巣材を十分に用意してあげましょう';
+                } else {
+                    comment = '予定日を過ぎています<br>様子をよく観察してください';
+                }
+                
+                html += '<div class="record-card">';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">';
+                html += '<h3 style="color: #ff9a9e; margin: 0;">🐹 ' + pregnancy.name + '</h3>';
+                html += '<div style="display: flex; gap: 5px;">';
+                html += '<button onclick="editPregnancy(' + pregnancy.id + ')" class="delete-btn" style="background: #4CAF50;">📝 編集</button>';
+                html += '<button onclick="deletePregnancyConfirm(' + pregnancy.id + ')" class="delete-btn">🗑️ 削除</button>';
+                html += '<button onclick="archivePregnancy(' + pregnancy.id + ')" class="delete-btn" style="background: #2196F3;">📦 アーカイブ</button>';
+                html += '</div></div>';
+                
+                // 妊娠疑惑日数とコメント統合（コメントは左寄せ）
+                html += '<div style="background: linear-gradient(135deg, #ff9a9e 0%, #f093fb 100%); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px;">';
+                html += '<div style="font-size: 1.8em; font-weight: bold; text-align: center;">🎉 今日は妊娠疑惑 ' + daysPregnant + '日目 です</div>';
+                html += '<div style="text-align: left; margin-top: 15px; font-size: 1em; line-height: 1.6;">' + comment + '</div>';
+                html += '</div>';
+                
+                // 出産予定日
+                html += '<div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
+                html += '<strong style="color: #ff9a9e;">📅 出産予定日:</strong><br>';
+                html += '<span style="font-size: 1.2em;">';
+                html += (dueDate17.getMonth() + 1) + '月' + dueDate17.getDate() + '日 〜 ';
+                html += (dueDate19.getMonth() + 1) + '月' + dueDate19.getDate() + '日';
+                html += '</span><br>';
+                html += '<span style="color: #666; font-size: 0.9em;">（⭐' + (dueDate18.getMonth() + 1) + '月' + dueDate18.getDate() + '日-' + (dueDate19.getMonth() + 1) + '月' + dueDate19.getDate() + '日が可能性大）</span>';
+                html += '</div>';
+                
+                // 最後の発情日
+                html += '<p style="color: #666; margin-bottom: 20px; font-size: 14px;">最後の発情日: ' + 
+                        (heatDate.getMonth() + 1) + '月' + heatDate.getDate() + '日</p>';
+                
+                // カレンダー表示
+                html += generatePregnancyCalendar(heatDate, daysPregnant);
+                
+                html += '</div>';
+            });
+            
+            listDiv.innerHTML = html;
+        }
+        
+        // 妊娠観察カレンダー生成
+        function generatePregnancyCalendar(heatDate, currentDay) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            let calendarHtml = '';
+            
+            // 発情日の月から2ヶ月分表示
+            for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
+                const month = new Date(heatDate.getFullYear(), heatDate.getMonth() + monthOffset, 1);
+                const year = month.getFullYear();
+                const monthNum = month.getMonth();
+                const firstDay = month.getDay();
+                const daysInMonth = new Date(year, monthNum + 1, 0).getDate();
+                
+                calendarHtml += '<div style="margin-top: 30px; margin-bottom: 10px;">';
+                calendarHtml += '<div style="text-align: center; font-size: 1.1em; font-weight: bold; margin-bottom: 10px; color: #555;">';
+                calendarHtml += year + '年 ' + (monthNum + 1) + '月</div>';
+                
+                calendarHtml += '<div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;">';
+                
+                const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
+                weekDays.forEach(day => {
+                    calendarHtml += '<div style="text-align: center; font-weight: bold; padding: 8px; background: #f8f9fa; border-radius: 5px; font-size: 0.85em;">' + day + '</div>';
+                });
+                
+                for (let i = 0; i < firstDay; i++) {
+                    calendarHtml += '<div></div>';
+                }
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const currentDate = new Date(year, monthNum, day);
+                    currentDate.setHours(0, 0, 0, 0);
+                    
+                    const daysSinceHeat = Math.floor((currentDate - heatDate) / (1000 * 60 * 60 * 24));
+                    const isToday = currentDate.getTime() === today.getTime();
+                    const isHeatDay = daysSinceHeat === 0;
+                    const isDayTen = daysSinceHeat === 10;
+                    const isDueDate = daysSinceHeat >= 17 && daysSinceHeat <= 19;
+                    
+                    let cellStyle = 'padding: 10px 5px; text-align: center; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 0.75em; position: relative; line-height: 1.2;';
+                    let marker = '';
+                    
+                    if (isHeatDay) {
+                        cellStyle += ' background: linear-gradient(135deg, #ffe0e8 0%, #ffd0e0 100%); border-color: #ff9a9e; color: #ff6b9d; font-weight: bold;';
+                        marker = '<div style="font-size: 0.9em;">🌸</div>';
+                    } else if (isDayTen) {
+                        cellStyle += ' background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-color: #ff9800; color: #e65100; font-weight: bold;';
+                        marker = '<div style="font-size: 0.9em;">🎯</div>';
+                    } else if (isDueDate) {
+                        cellStyle += ' background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border-color: #f44336; color: #c62828; font-weight: bold;';
+                        marker = '<div style="font-size: 0.9em;">🎉</div>';
+                    } else if (daysSinceHeat >= 0 && daysSinceHeat <= 19) {
+                        cellStyle += ' background: #f3e5f5; color: #7b1fa2;';
+                    } else {
+                        cellStyle += ' background: white;';
+                    }
+                    
+                    if (isToday) {
+                        cellStyle += ' border: 2px solid #4ecdc4; box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);';
+                    }
+                    
+                    calendarHtml += '<div style="' + cellStyle + '">';
+                    calendarHtml += '<div>' + day + '</div>';
+                    if (daysSinceHeat >= 0 && daysSinceHeat <= 19) {
+                        calendarHtml += '<div style="font-size: 0.7em; color: #999;">' + daysSinceHeat + '日</div>';
+                    }
+                    calendarHtml += marker;
+                    calendarHtml += '</div>';
+                }
+                
+                calendarHtml += '</div></div>';
+            }
+            
+            return calendarHtml;
+        }
+        
+        // 妊娠観察プルダウンを更新
+        function updatePregnancySelector() {
+            const selector = document.getElementById('selectedPregnantHamster');
+            const currentValue = selector.value;
+            
+            const activePregnancies = pregnantHamsters.filter(p => !p.archived);
+            
+            let options = '<option value="">すべて表示</option>';
+            activePregnancies.forEach(pregnancy => {
+                options += '<option value="' + pregnancy.id + '">' + pregnancy.name + '</option>';
+            });
+            selector.innerHTML = options;
+            
+            if (currentValue) {
+                selector.value = currentValue;
+            }
+        }
+        
+        // 選択された妊娠観察を表示
+        function displaySelectedPregnancy() {
+            displayPregnancies();
+        }
+        
+        // 妊娠観察編集
+        function editPregnancy(id) {
+            const pregnancy = pregnantHamsters.find(p => p.id === id);
+            if (!pregnancy) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            modal.id = 'editPregnancyModal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 20px; color: #ff9a9e; text-align: center;">📝 名前を編集</h3>' +
+                '<div style="text-align: left;">' +
+                    '<div class="input-group">' +
+                        '<label for="editPregnancyName">🐹 新しい名前</label>' +
+                        '<input type="text" id="editPregnancyName" value="' + pregnancy.name + '" style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 16px;">' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">' +
+                    '<button onclick="confirmEditPregnancy(' + id + ')" style="background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 200px;">保存</button>' +
+                    '<button onclick="closeEditPregnancyModal()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 200px;">キャンセル</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeEditPregnancyModal();
+                }
+            });
+            
+            // Enterキーで保存
+            document.getElementById('editPregnancyName').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') confirmEditPregnancy(id);
+            });
+            
+            // フォーカス
+            setTimeout(() => {
+                document.getElementById('editPregnancyName').focus();
+                document.getElementById('editPregnancyName').select();
+            }, 100);
+        }
+        
+        // 編集確定
+        function confirmEditPregnancy(id) {
+            const nameInput = document.getElementById('editPregnancyName');
+            const newName = nameInput.value.trim();
+            
+            if (!newName) {
+                showNotification('名前を入力してください', 'error');
+                return;
+            }
+            
+            const pregnancy = pregnantHamsters.find(p => p.id === id);
+            if (pregnancy) {
+                pregnancy.name = newName;
+                savePregnanciesStorage();
+                displayPregnancies();
+                closeEditPregnancyModal();
+                showNotification('名前を変更しました');
+            }
+        }
+        
+        // 編集モーダルを閉じる
+        function closeEditPregnancyModal() {
+            const modal = document.getElementById('editPregnancyModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        // 妊娠観察削除確認
+        function deletePregnancyConfirm(id) {
+            const pregnancy = pregnantHamsters.find(p => p.id === id);
+            if (!pregnancy) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            modalContent.style.textAlign = 'center';
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 20px; color: #ff6b9d;">🐹 ' + pregnancy.name + 'ちゃんの観察データを削除しますか？</h3>' +
+                '<p style="margin-bottom: 30px; color: #666;">この操作は取り消せません</p>' +
+                '<div style="display: flex; gap: 10px; justify-content: center;">' +
+                    '<button onclick="confirmDeletePregnancy(' + id + ')" style="background: #ff6b6b; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 150px;">はい</button>' +
+                    '<button onclick="closeDeletePregnancyModal()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 150px;">いいえ</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+        }
+        
+        // 妊娠観察削除確定
+        function confirmDeletePregnancy(id) {
+            pregnantHamsters = pregnantHamsters.filter(p => p.id !== id);
+            savePregnanciesStorage();
+            displayPregnancies();
+            closeDeletePregnancyModal();
+            showNotification('観察データを削除しました');
+        }
+        
+        // 削除モーダルを閉じる
+        function closeDeletePregnancyModal() {
+            const modal = document.querySelector('.csv-modal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+        
+        // アーカイブ
+        function archivePregnancy(id) {
+            const pregnancy = pregnantHamsters.find(p => p.id === id);
+            if (!pregnancy) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'csv-modal';
+            modal.id = 'archivePregnancyModal';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'csv-modal-content';
+            modalContent.style.textAlign = 'center';
+            
+            modalContent.innerHTML = 
+                '<h3 style="margin-bottom: 20px; color: #2196F3;">📦 ' + pregnancy.name + 'ちゃんをアーカイブしますか？</h3>' +
+                '<p style="margin-bottom: 30px; color: #666;">妊娠しなかった記録として保存されます</p>' +
+                '<div style="display: flex; gap: 10px; justify-content: center;">' +
+                    '<button onclick="confirmArchivePregnancy(' + id + ')" style="background: #2196F3; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 150px;">はい</button>' +
+                    '<button onclick="closeArchivePregnancyModal()" style="background: #999; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: 600; flex: 1; max-width: 150px;">いいえ</button>' +
+                '</div>';
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeArchivePregnancyModal();
+                }
+            });
+        }
+        
+        // アーカイブ確定
+        function confirmArchivePregnancy(id) {
+            const pregnancy = pregnantHamsters.find(p => p.id === id);
+            if (pregnancy) {
+                pregnancy.archived = true;
+                pregnancy.archivedDate = new Date().toISOString().split('T')[0];
+                savePregnanciesStorage();
+                displayPregnancies();
+                closeArchivePregnancyModal();
+                showNotification('アーカイブしました');
+            }
+        }
+        
+        // アーカイブモーダルを閉じる
+        function closeArchivePregnancyModal() {
+            const modal = document.getElementById('archivePregnancyModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
         }
         
         // ハムスター追加モーダルを開く
