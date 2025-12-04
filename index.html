@@ -1053,7 +1053,6 @@
             document.getElementById('matingDate').max = today;
             document.getElementById('recordMatingDate').max = today;
             document.getElementById('birthDate').max = today;
-            document.getElementById('lastHeatDate').max = today; // 発情期入力も追加
             
             // 初期化時に記録一覧を表示
             displayRecords();
@@ -1218,6 +1217,9 @@
         function displayHeatCycles() {
             const listDiv = document.getElementById('heatCycleList');
             const notificationDiv = document.getElementById('todayHeatNotification');
+            
+            // プルダウンを更新
+            updateHamsterSelector();
             
             // 今日の発情期通知をチェック
             checkTodayHeat(notificationDiv);
@@ -1459,6 +1461,7 @@
         // ハムスター選択プルダウンを更新
         function updateHamsterSelector() {
             const selector = document.getElementById('selectedHamster');
+            const currentValue = selector.value; // 現在の選択値を保存
             
             // プルダウンを更新
             let options = '<option value="">すべて表示</option>';
@@ -1466,6 +1469,11 @@
                 options += '<option value="' + hamster.id + '">' + hamster.name + '</option>';
             });
             selector.innerHTML = options;
+            
+            // 選択値を復元
+            if (currentValue) {
+                selector.value = currentValue;
+            }
         }
         
         // 選択されたハムスターを表示
