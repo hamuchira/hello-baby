@@ -1,0 +1,27 @@
+{
+  "name": "プレはむぴよ",
+  "short_name": "はむぴよ",
+  "description": "ジャンガリアンの妊活アプリ",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ff9a9e",
+  "theme_color": "#ff9a9e",
+  "icons": [
+    {
+      "src": "prepiyo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "prepiyo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "prepiyo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
